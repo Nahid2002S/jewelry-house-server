@@ -62,6 +62,14 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/users/:email', async(req, res) =>{
+        const email = req.params.email;
+        const query = {email : email};
+
+        const result = await userCollections.findOne(query);
+        res.send(result);
+    })
+
     app.patch('/users/owner/:email', async(req, res) =>{
       const email = req.params.email;
       const filter = {email : email}
