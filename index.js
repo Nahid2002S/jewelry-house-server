@@ -37,10 +37,42 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/jewelry', async(req, res) => {
+        const result = await jewelryCollections.find().toArray();
+        res.send(result);
+    })
+
+    app.get('/jewelry/:email', async(req, res) =>{
+        const email = req.params.email;
+        const query = {ownerEmail : email};
+        const result = await jewelryCollections.find(query).toArray();
+        res.send(result);
+    })
+
     app.post('/users', async(req, res) =>{
         const users = req.body;
+
+        const query = {email : users.email}
+        const existingUser = await userCollections.findOne(query);
+        if(existingUser){
+          return res.send({message : 'user already exist'})
+        }
+
         const result = await userCollections.insertOne(users);
         res.send(result);
+    })
+
+    app.patch('/users/owner/:email', async(req, res) =>{
+      const email = req.params.email;
+      const filter = {email : email}
+      const updateDoc = {
+        $set: {
+          role: 'owner'
+        },
+      };
+
+      const result = await userCollections.updateOne(filter, updateDoc);
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
